@@ -52,6 +52,14 @@ public class GameSceneManager : Singleton<GameSceneManager>
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
         _currentSceneType = StringToEnum(scene.name);
         _currentScene = FindObjectOfType<BaseScene>();
+        if(_currentScene == null) {
+            Debug.LogError(scene.name + "'s manager object is not found. please add the manager of the scene.");
+        }
+        else {
+            print(scene.name + " scene was loaded.");
+        }
+        _currentScene.OnSceneStarted();
+        _currentScene.OnStart();
     }
 
     static Scenes StringToEnum(string sceneName) {
@@ -66,6 +74,7 @@ public class GameSceneManager : Singleton<GameSceneManager>
         if(CurrentSceneType == scene) return;
         _currentScene.OnSceneEnded();
 
+        print("Scene is changing to " + EnumToString(scene));
         StartCoroutine(LoadScene(scene));
         
     }
@@ -113,7 +122,10 @@ public class GameSceneManager : Singleton<GameSceneManager>
         }
         else {
             IsFading = false;
-            _currentScene.OnSceneStarted();
         }
+    }
+
+    private void Update() {
+        _currentScene.OnUpdate();
     }
 }

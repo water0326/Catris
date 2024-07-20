@@ -2,15 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Maker : BaseScene
+public class Loading : BaseScene
 {
     public override void OnSceneStarted()
     {
-        sceneType = Scenes.Maker;
+        sceneType = Scenes.Loading;
     }
     public override void OnStart()
     {
-        GameSceneManager.Instance.ChangeScene(Scenes.Lobby);
+        
     }
     public override void OnUpdate()
     {
