@@ -19,6 +19,7 @@ public class GameSceneManager : Singleton<GameSceneManager>
     float FadeTime = 1f;
     float CurrentFadeValue = 0f;
     bool IsFading = false;
+    bool IsEnteredLoading = false;
 
     public static Scenes CurrentSceneType {
         get {
@@ -91,8 +92,9 @@ public class GameSceneManager : Singleton<GameSceneManager>
 
             yield return null;
 
-            if(op.progress >= 0.9f) {
+            if(op.progress >= 0.9f && IsEnteredLoading) {
                 op.allowSceneActivation = true;
+                print("Entered to " + EnumToString(scene) + " Scene.");
                 yield break;
             }
         }
@@ -111,6 +113,7 @@ public class GameSceneManager : Singleton<GameSceneManager>
 
             if(isFadeIn) {
                 CurrentFadeValue = timer / FadeTime;
+                IsEnteredLoading = false;
             }
             else {
                 CurrentFadeValue = 1 - timer / FadeTime;
@@ -119,6 +122,8 @@ public class GameSceneManager : Singleton<GameSceneManager>
         }
         if(isFadeIn) {
             SceneManager.LoadScene(EnumToString(Scenes.Loading));
+            print("Entered to Loading Scene.");
+            IsEnteredLoading = true;
         }
         else {
             IsFading = false;
