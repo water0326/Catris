@@ -4,12 +4,20 @@ using UnityEngine;
 
 public abstract class SwitchableUI : BaseUI, ISwitchable
 {
-    public void UIToggle(bool isActive) {
+
+    bool isenabled = false;
+    public bool IsEnabled {
+        get {return isenabled;}
+    }
+
+    public void ToggleActive(bool isActive) {
         if(isActive) {
             UIOn();
+            isenabled = true;
         }
         else {
             UIOff();
+            isenabled = false;
         }
     }
     public abstract void UIOn();
