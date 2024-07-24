@@ -41,3 +41,18 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: BG
+    uniqueID: 3879993677
+    locked: 0
+  - name: BackObject
+    uniqueID: 3493316419
+    locked: 0
+  - name: Object
+    uniqueID: 4126619975
+    locked: 0
+  - name: FrontObject
+    uniqueID: 1642237317
+    locked: 0
+  - name: UI
+    uniqueID: 2695612395
+    locked: 0

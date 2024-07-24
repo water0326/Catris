@@ -7,6 +7,7 @@ public class Lobby : BaseScene
     public override void OnSceneStarted()
     {
         sceneType = Scenes.Lobby;
+        print("test");
     }
     public override void OnStart()
     {

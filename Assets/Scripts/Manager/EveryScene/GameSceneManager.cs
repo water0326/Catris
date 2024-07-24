@@ -19,7 +19,9 @@ public class GameSceneManager : Singleton<GameSceneManager>
     float FadeTime = 1f;
     float CurrentFadeValue = 0f;
     bool IsFading = false;
-    bool IsEnteredLoading = false;
+
+    [SerializeField]
+    SceneFadeUI sceneFadeUI;
 
     public static Scenes CurrentSceneType {
         get {
@@ -59,6 +61,9 @@ public class GameSceneManager : Singleton<GameSceneManager>
         else {
             print(scene.name + " scene was loaded.");
         }
+
+        GameManager.Instance.Resume();
+
         _currentScene.OnSceneStarted();
         _currentScene.OnStart();
     }
@@ -75,6 +80,8 @@ public class GameSceneManager : Singleton<GameSceneManager>
         if(CurrentSceneType == scene) return;
         _currentScene.OnSceneEnded();
 
+        GameManager.Instance.Pause();
+
         print("Scene is changing to " + EnumToString(scene));
         StartCoroutine(LoadScene(scene));
         
@@ -82,28 +89,46 @@ public class GameSceneManager : Singleton<GameSceneManager>
 
     IEnumerator LoadScene(Scenes scene) {
 
-        IsFading = true;
+        if(scene == Scenes.Loading) yield break;
+
+        AsyncOperation loading_op = SceneManager.LoadSceneAsync(EnumToString(Scenes.Loading));
+        loading_op.allowSceneActivation = false;
         AsyncOperation op = SceneManager.LoadSceneAsync(EnumToString(scene));
         op.allowSceneActivation = false;
 
-        StartCoroutine(Fade(true));
+        Fade(true);
 
-        while(!op.isDone) {
+        yield return null;
 
-            yield return null;
+        yield return new WaitUntil(() => !IsFading && loading_op.progress >= 0.9f);
 
-            if(op.progress >= 0.9f && IsEnteredLoading) {
-                op.allowSceneActivation = true;
-                print("Entered to " + EnumToString(scene) + " Scene.");
-                yield break;
-            }
-        }
-        StartCoroutine(Fade(false));
+        loading_op.allowSceneActivation = true;
+
+        yield return new WaitUntil(() => op.progress >= 0.9f);
+
+        op.allowSceneActivation = true;
+        
+        print("Entered to " + EnumToString(scene) + " Scene.");
+        Fade(false);
+
+        yield break;
+
     }
 
-    IEnumerator Fade(bool isFadeIn) {
+    void Fade(bool isFadeIn) {
+        
+        IsFading = true;
+        if(isFadeIn) sceneFadeUI.ToggleActive(true);
+
+        StartCoroutine(FadeCoroutine(isFadeIn));
+
+    }
+
+    IEnumerator FadeCoroutine(bool isFadeIn) {
 
         float timer = 0f;
+
+        yield return null;
 
         while(timer <= FadeTime) {
 
@@ -113,21 +138,17 @@ public class GameSceneManager : Singleton<GameSceneManager>
 
             if(isFadeIn) {
                 CurrentFadeValue = timer / FadeTime;
-                IsEnteredLoading = false;
             }
             else {
                 CurrentFadeValue = 1 - timer / FadeTime;
             }
-            print(CurrentFadeValue);
+            sceneFadeUI.SetAlpha(CurrentFadeValue);
+            
         }
-        if(isFadeIn) {
-            SceneManager.LoadScene(EnumToString(Scenes.Loading));
-            print("Entered to Loading Scene.");
-            IsEnteredLoading = true;
+        if(!isFadeIn) {
+            sceneFadeUI.ToggleActive(false);
         }
-        else {
-            IsFading = false;
-        }
+        IsFading = false;
     }
 
     private void Update() {

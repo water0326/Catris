@@ -75,7 +75,10 @@ public class UIManager : Singleton<UIManager>
 
     }
     public void DisableUI() {
-        // TODO
+
+        SwitchableUI s_ui = switchableUIStack.Pop().GetComponent<SwitchableUI>();
+        s_ui.ToggleActive(false);
+
     }
 
 }

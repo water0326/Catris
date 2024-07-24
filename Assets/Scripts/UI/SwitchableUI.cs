@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class SwitchableUI : BaseUI, ISwitchable
 {
-
+    [SerializeField]
     bool isenabled = false;
     public bool IsEnabled {
         get {return isenabled;}
@@ -22,6 +22,5 @@ public abstract class SwitchableUI : BaseUI, ISwitchable
     }
     public abstract void UIOn();
     public abstract void UIOff();
-
     
 }

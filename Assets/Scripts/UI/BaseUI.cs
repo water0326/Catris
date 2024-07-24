@@ -6,12 +6,10 @@ using UnityEngine;
 public abstract class BaseUI : MonoBehaviour
 {
     [SerializeField]
-    private static int id;
+    private int id;
     public int ID {
         get { return id; }
     }
-
-    public abstract void OnStart();
 
     private void Awake() {
         if(gameObject.GetComponent<Canvas>() == null) {
