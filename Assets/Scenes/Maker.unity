@@ -252,10 +252,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Game Scene Manager
       objectReference: {fileID: 0}
-    - target: {fileID: 1446874237948538036, guid: 0bd2a9d47f0b67447960c9989d81dfbc, type: 3}
-      propertyPath: FadeTime
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 1446874237948538037, guid: 0bd2a9d47f0b67447960c9989d81dfbc, type: 3}
       propertyPath: m_RootOrder
       value: 2

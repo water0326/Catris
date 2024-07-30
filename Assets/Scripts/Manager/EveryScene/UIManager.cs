@@ -13,6 +13,8 @@ public class UIManager : Singleton<UIManager>
     const int FIXED_UI_OREDER_IN_LAYER = 10;
     const int SWITCHABLE_UI_OREDER_IN_LAYER = 50;
 
+    const string DEFAULT_LAYER_NAME = "UI";
+
     private void OnEnable() {
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
@@ -69,7 +71,9 @@ public class UIManager : Singleton<UIManager>
             return;
         }
 
-        baseui.gameObject.GetComponent<Canvas>().sortingOrder = SWITCHABLE_UI_OREDER_IN_LAYER + switchableUIStack.Count;
+        Canvas component = baseui.gameObject.GetComponent<Canvas>();
+        component.sortingLayerName = DEFAULT_LAYER_NAME;
+        component.sortingOrder = SWITCHABLE_UI_OREDER_IN_LAYER + switchableUIStack.Count;
         switchableUIStack.Push(baseui);
         s_ui.ToggleActive(true);
 

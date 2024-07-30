@@ -1,13 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Lobby : BaseScene
 {
     public override void OnSceneStarted()
     {
         sceneType = Scenes.Lobby;
-        print("test");
     }
     public override void OnStart()
     {
@@ -20,5 +20,9 @@ public class Lobby : BaseScene
     public override void OnSceneEnded()
     {
         
+    }
+
+    public void StartGame() {
+        GameSceneManager.Instance.ChangeScene(Scenes.InGame);
     }
 }
