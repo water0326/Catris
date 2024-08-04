@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class Math
+public static class GridMath
 {
     public static bool IsNumberInRange(float number, float min, float max) {
         return number >= min && number <= max;
@@ -20,4 +20,6 @@ public static class Math
         
         return WorldObject_ScreenPosition;
     }
+
+    
 }

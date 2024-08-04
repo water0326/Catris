@@ -3,39 +3,81 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
+[System.Serializable]
+public class GridSetting {
+    public float gridSizeX {
+        get {
+            return Camera.main.ScreenToViewportPoint(new Vector2(Camera.main.ViewportToScreenPoint(new Vector2(0, gridSizeY)).y * grid_cell_ratio, 0)).x;
+        }
+    }
+    public float gridSizeY = 0f;
+    public Vector2 gridCenterPos = new Vector2(0, 0);
+    public float grid_cell_ratio {
+        get { return (float)grid_cell_count_x / grid_cell_count_y;}
+    }
+    public int grid_cell_count_x = 10;
+    public int grid_cell_count_y = 20;
+    public Vector2 blockSize {
+        get { return new Vector2(gridSizeX / grid_cell_count_x, gridSizeY / grid_cell_count_y); }
+    }
+}
+
 public class BlockGrid : MonoBehaviour
 {
-    const int GRID_CELL_COUNT_X = 10;
-    const int GRID_CELL_COUNT_Y = 20;
+
+    public static BlockGrid Instance {
+        get {
+            if(_instance == null) {
+                Debug.LogError("There isn't BlockGrid Object");
+            }
+            return _instance;
+        }
+    }
+
+    static BlockGrid _instance;
 
     List<Block> ActivedBlockList = new List<Block>();
 
     [SerializeField]
     BlockManager blockManager;
+    
+    public static GridSetting gridSetting {
+        get { return setting; }
+        private set {}
+    }
+
+    static GridSetting setting = new GridSetting();
 
     [SerializeField]
-    Vector2 gridDimensions;
+    GridSetting _gridSetting;
+
     [SerializeField]
-    Vector2 gridCenterPos;
+    Transform activatedBlocksParent;
 
     Block[,] blockGrid;
 
     [SerializeField]
     Canvas screenCanvas;
 
-    public Block CreateBlock(int id, int x, int y) {
+    private void Awake() {
+        _instance = this;
+        setting = _gridSetting;
+    }
+
+    public Block CreateBlock(string blockName, int x, int y) {
 
         if(!IsPosInRange(x, y)) {
             Debug.LogWarning("the position of the block is not in range");
             return null;
         }
 
-        Block block = blockManager.GetBlock(id);
+        Block block = blockManager.GetBlock(blockName);
         block.pos = new Vector2(x, y);
+        block.transform.parent = activatedBlocksParent;
 
         ActivedBlockList.Add(block);
         blockGrid[x, y] = block;
-        blockManager.ActiveBlock(block);
+        block.Active();
 
         return block;
 
@@ -44,6 +86,8 @@ public class BlockGrid : MonoBehaviour
     public bool RemoveBlock(Block block) {
 
         if(!ActivedBlockList.Contains(block)) return false;
+
+        block.Deactive();
 
         ActivedBlockList.Remove(block);
         blockManager.RemoveBlock(block);
@@ -79,38 +123,69 @@ public class BlockGrid : MonoBehaviour
         }
 
         ActivedBlockList = new List<Block>();
-        blockGrid = new Block[GRID_CELL_COUNT_X, GRID_CELL_COUNT_Y];
+        blockGrid = new Block[_gridSetting.grid_cell_count_x, _gridSetting.grid_cell_count_y];
 
     }
 
     private void OnDrawGizmos() {
-        Gizmos.color = Color.red;
-        float blockSizeX = gridDimensions.x / GRID_CELL_COUNT_X;
-        float blockSizeY = gridDimensions.y / GRID_CELL_COUNT_Y;
 
-        Gizmos.DrawWireCube(gridCenterPos, Camera.main.ViewportToWorldPoint(gridDimensions));
+        Vector2 ViewPortOffset = new Vector2(0.5f, 0.5f);
+
+        
+        Vector2 blockSizeVector = new Vector2(_gridSetting.gridSizeX / _gridSetting.grid_cell_count_x, _gridSetting.gridSizeY / _gridSetting.grid_cell_count_y);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(
+            Camera.main.ViewportToWorldPoint(_gridSetting.gridCenterPos),
+            Camera.main.ViewportToWorldPoint(new Vector2(_gridSetting.gridSizeX, _gridSetting.gridSizeY) + ViewPortOffset)
+        );
+
         Gizmos.color = Color.green;
-        Gizmos.DrawCube(new Vector2(0, 0), Camera.main.ViewportToWorldPoint(new Vector2(blockSizeX, blockSizeY)));
+        for(int i = 0 ; i < _gridSetting.grid_cell_count_x ; i++) {
+            for(int j = 0 ; j < _gridSetting.grid_cell_count_y ; j++) {
+                Gizmos.DrawWireCube(
+                    Camera.main.ViewportToWorldPoint(GridPosToViewPort(i, j)),
+                    Camera.main.ViewportToWorldPoint(blockSizeVector + ViewPortOffset)
+                );
+            }
+        }
+        
     }
 
     bool IsPosInRange(int x, int y) {
-        return Math.IsNumberInRange(x, 0, GRID_CELL_COUNT_X-1) && Math.IsNumberInRange(y, 0, GRID_CELL_COUNT_Y-1);
+        return GridMath.IsNumberInRange(x, 0, _gridSetting.grid_cell_count_x-1) && GridMath.IsNumberInRange(y, 0, _gridSetting.grid_cell_count_y-1);
     }
 
-    public Vector2 GetCanvasPosByIndex(int x, int y) {
-        return new Vector2(0, 0);
-    }
+    public Vector2 GridPosToViewPort(int x, int y) {
 
-    Vector2 GridPosToViewPort(int x, int y) {
-        float blockSizeX = gridDimensions.x / GRID_CELL_COUNT_X;
-        float blockSizeY = gridDimensions.y / GRID_CELL_COUNT_Y;
+        Vector2 startPos = new Vector2((1 - _gridSetting.gridSizeX) * 0.5f, (1 - _gridSetting.gridSizeY) * 0.5f);
 
-        Vector2 result = new Vector2(blockSizeX * (x+0.5f) - gridDimensions.x * 0.5f, blockSizeY * (y+0.5f) - gridDimensions.y * 0.5f);
-        print(result);
-        print(blockSizeX);
-        print(blockSizeY);
+        float blockSizeX = _gridSetting.gridSizeX / _gridSetting.grid_cell_count_x;
+        float blockSizeY = _gridSetting.gridSizeY / _gridSetting.grid_cell_count_y;
+
+        Vector2 result = new Vector2(startPos.x + blockSizeX * (x+0.5f), startPos.y + blockSizeY * (y+0.5f));
+
         return result;
 
     }
+
+    public Vector2 GridPosToScreenPos(int x, int y) {
+
+        Vector2 startPos = new Vector2((1 - gridSetting.gridSizeX) * 0.5f, (1 - gridSetting.gridSizeY) * 0.5f);
+
+        float blockSizeX = gridSetting.gridSizeX / gridSetting.grid_cell_count_x;
+        float blockSizeY = gridSetting.gridSizeY / gridSetting.grid_cell_count_y;
+
+        Vector2 screenPos = new Vector2(startPos.x + blockSizeX * (x+0.5f), startPos.y + blockSizeY * (y+0.5f));
+
+        Vector2 result;
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(screenCanvas.GetComponent<RectTransform>(), Camera.main.ViewportToScreenPoint(screenPos), Camera.main, out  result);
+
+        return result;
+
+    }
+
+    
 
 }

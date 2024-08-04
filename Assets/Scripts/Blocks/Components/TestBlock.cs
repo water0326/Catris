@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Cat : Block
+public class TestBlock : Block
 {
     public override void Active()
     {
