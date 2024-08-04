@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -7,6 +8,8 @@ using UnityEngine.UI;
 public class UIManager : Singleton<UIManager>
 {
 
+    [ReadOnly]
+    [SerializeField]
     List<BaseUI> UIList = new List<BaseUI>();
     Stack<BaseUI> switchableUIStack = new Stack<BaseUI>();
 
@@ -31,6 +34,14 @@ public class UIManager : Singleton<UIManager>
 
     void GetAllUIInScene() {
         UIList = new List<BaseUI>(GameObject.FindObjectsOfType<BaseUI>());
+        for(int i = 0 ; i < UIList.Count ; i++) {
+            for(int j = i+1 ; j < UIList.Count ; j++) {
+                if(UIList[i].ID == UIList[j].ID) {
+                    Debug.LogError("There are UI has same ids");
+                    return;
+                }
+            }
+        }
     }
     void PushActiveUI() {
 

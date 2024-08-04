@@ -119,6 +119,7 @@ public class GameSceneManager : Singleton<GameSceneManager>
         
         IsFading = true;
         if(isFadeIn) sceneFadeUI.ToggleActive(true);
+        sceneFadeUI.SetAlpha(isFadeIn ? 0f : 1f);
 
         StartCoroutine(FadeCoroutine(isFadeIn));
 
