@@ -22,7 +22,7 @@ public class BlockPool
         obj.SetActive(false);
         pool.Enqueue(obj);
         obj.transform.parent = parent;
-        obj.name = name;
+        obj.GetComponent<Block>().blockName = name;
     }
 
     public void Reset() {

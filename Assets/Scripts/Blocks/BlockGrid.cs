@@ -54,10 +54,22 @@ public class BlockGrid : MonoBehaviour
     [SerializeField]
     Transform activatedBlocksParent;
 
+    [SerializeField]
+    [ReadOnly]
     Block[,] blockGrid;
+    [SerializeField]
+    [ReadOnly]
+    string[,] defaultBlockName;
 
     [SerializeField]
     Canvas screenCanvas;
+
+    [SerializeField]
+    string chessBlockName = "Chess";
+    [SerializeField]
+    string breakLineBlockName = "BreakLine";
+    [SerializeField]
+    string playerBoardBlockName = "PlayerBoard";
 
     private void Awake() {
         _instance = this;
@@ -70,13 +82,17 @@ public class BlockGrid : MonoBehaviour
             Debug.LogWarning("the position of the block is not in range");
             return null;
         }
-        if(IsThereBlock(x, y)) return null;
+        if(!CanMove(x, y)) return null;
 
         Block block = blockManager.GetBlock(blockName);
-        block.pos = new Vector2(x, y);
+        block.x = x;
+        block.y = y;
         block.transform.parent = activatedBlocksParent;
 
         ActivedBlockList.Add(block);
+        if(blockGrid[x, y]!=null) {
+            RemoveBlock(blockGrid[x, y]);
+        }
         blockGrid[x, y] = block;
         block.Active();
 
@@ -88,11 +104,18 @@ public class BlockGrid : MonoBehaviour
 
         if(!ActivedBlockList.Contains(block)) return false;
 
+        int x = block.x;
+        int y = block.y;
+        if(block.blockName != defaultBlockName[x,y]) {
+            blockGrid[block.x, block.y] = CreateBlock(defaultBlockName[x, y], x, y);
+        }
+
         block.Deactive();
 
         ActivedBlockList.Remove(block);
         blockManager.RemoveBlock(block);
-        blockGrid[(int)block.pos.x, (int)block.pos.y] = null;
+
+        
 
         return true;
 
@@ -104,17 +127,30 @@ public class BlockGrid : MonoBehaviour
             Debug.LogWarning("the position of the block is not in range");
             return false;
         }
-        if(IsThereBlock(x, y)) return false;
+        if(!CanMove(x, y)) return false;
 
-        blockGrid[(int)block.pos.x, (int)block.pos.y] = null;
+        blockGrid[block.x, block.y] = CreateBlock(defaultBlockName[x, y], block.x, block.y);
         blockGrid[x, y] = block;
+        block.x = x;
+        block.y = y;
 
         return true;
         
     }
+    public void ForceMoveBlock(Block block, int x, int y) {
+        if(!IsPosInRange(x, y)) {
+            Debug.LogWarning("the position of the block is not in range");
+        }
 
-    public bool IsThereBlock(int x, int y) {
-        return blockGrid[x, y] != null;
+        blockGrid[block.x, block.y] = CreateBlock(defaultBlockName[x, y], block.x, block.y);
+        blockGrid[x, y] = block;
+        block.x = x;
+        block.y = y;
+    }
+
+    public bool CanMove(int x, int y) {
+        if(!IsPosInRange(x, y)) return false;
+        return blockGrid[x, y] == null || blockGrid[x, y].canIgnore;
     }
     
     public void Reset() {
@@ -125,7 +161,29 @@ public class BlockGrid : MonoBehaviour
 
         ActivedBlockList = new List<Block>();
         blockGrid = new Block[_gridSetting.grid_cell_count_x, _gridSetting.grid_cell_count_y];
+        defaultBlockName = new string[_gridSetting.grid_cell_count_x, _gridSetting.grid_cell_count_y];
 
+        SetToEmptyBlock();
+
+    }
+
+    void SetToEmptyBlock() {
+        for(int i = 0 ; i < _gridSetting.grid_cell_count_x ; i++) {
+            for(int j = 0 ; j < _gridSetting.grid_cell_count_y; j++) {
+                if(j < _gridSetting.grid_cell_count_y - PlayerBlockManager.PlayerZoneYSize) {       // Chess
+                    blockGrid[i, j] = CreateBlock(chessBlockName, i, j);
+                    defaultBlockName[i, j] = chessBlockName;
+                }
+                else if(j == _gridSetting.grid_cell_count_y - PlayerBlockManager.PlayerZoneYSize) { // BreakLine
+                    blockGrid[i, j] = CreateBlock(breakLineBlockName, i, j);
+                    defaultBlockName[i, j] = breakLineBlockName;
+                }
+                else {                                                                              // PlayerBoard
+                    blockGrid[i, j] = CreateBlock(playerBoardBlockName, i, j);
+                    defaultBlockName[i, j] = playerBoardBlockName;
+                }
+            }
+        }
     }
 
     private void OnDrawGizmos() {

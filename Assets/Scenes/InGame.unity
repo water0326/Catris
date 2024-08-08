@@ -252,9 +252,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockInfoData:
-  - name: TestBlock
+  - name: Cat
     prefab: {fileID: 7859328385158409890, guid: 51e31820d415fb24e9b35bdb55e3dfe7, type: 3}
-    init_pool_count: 5
+    init_pool_count: 6
+  - name: Chess
+    prefab: {fileID: 7859328385158409890, guid: 41eaebd5b255bf74a9cb89785f005969, type: 3}
+    init_pool_count: 200
+  - name: PlayerBoard
+    prefab: {fileID: 7859328385158409890, guid: 9e04d5555e6dbed4599eb64956cceadf, type: 3}
+    init_pool_count: 40
+  - name: BreakLine
+    prefab: {fileID: 7859328385158409890, guid: 5a7d773669da25848b495a03b681d908, type: 3}
+    init_pool_count: 10
   poolsParent: {fileID: 1743727287}
 --- !u!1 &453025091
 GameObject:
@@ -353,7 +362,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bace7d70134dd1429461a46b7b53b1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CatBlockLength: 3
+  playerBlockLength: 4
+  playerBlockName: Cat
+  posList: []
+  straightSprite: {fileID: 649893620, guid: 88854f00ee3ab6149aef17cc8d44126d, type: 3}
+  curveSprite: {fileID: -1911029562, guid: 88854f00ee3ab6149aef17cc8d44126d, type: 3}
+  headSprite: {fileID: 50677492, guid: 88854f00ee3ab6149aef17cc8d44126d, type: 3}
+  tailSprite: {fileID: -534814100, guid: 88854f00ee3ab6149aef17cc8d44126d, type: 3}
 --- !u!224 &497773089
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1145,9 +1160,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockManager: {fileID: 244629292}
   _gridSetting:
-    gridSizeY: 0.7
+    gridSizeY: 0.8
     gridCenterPos: {x: 0.5, y: 0.5}
     grid_cell_count_x: 10
     grid_cell_count_y: 20
   activatedBlocksParent: {fileID: 859974701}
   screenCanvas: {fileID: 1199513208}
+  chessBlockName: Chess
+  breakLineBlockName: BreakLine
+  playerBoardBlockName: PlayerBoard

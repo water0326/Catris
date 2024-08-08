@@ -47,7 +47,11 @@ public class GameProgressManager : MonoBehaviour
 
     void PlayerAction() {
         Vector2 inputDirection = playerInputManager.GetCurrentActionDataAsVector();
-        
+        int x = (int)inputDirection.x;
+        int y = (int)inputDirection.y;
+        if(x != 0 || y != 0) {
+            playerBlockManager.Move((int)inputDirection.x, (int)inputDirection.y);
+        }
     }
     void ObstacleBlockSet() {
 

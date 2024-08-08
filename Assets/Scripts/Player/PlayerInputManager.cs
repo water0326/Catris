@@ -34,6 +34,7 @@ public class PlayerInputManager : MonoBehaviour
     KeyData noneKeyData = new KeyData(KeyCode.None, Vector2.zero, 0);
 
     private void Awake() {
+        currentKeyData = noneKeyData;
         actions.Add(ActionName.Down, new KeyData(KeyCode.S, new Vector2(0,-1),0));
         actions.Add(ActionName.Up, new KeyData(KeyCode.W, new Vector2(0,1),0));
         actions.Add(ActionName.Left, new KeyData(KeyCode.A, new Vector2(-1,0),0));
