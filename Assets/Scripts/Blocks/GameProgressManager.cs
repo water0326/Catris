@@ -5,17 +5,21 @@ using UnityEngine;
 public class GameProgressManager : MonoBehaviour
 {
 
-    [SerializeField]
-    BlockGrid blockGrid;
     [ReadOnly]
     public bool IsPlaying;
+
+    [SerializeField]
+    PlayerInputManager playerInputManager;
+    [SerializeField]
+    PlayerBlockManager playerBlockManager;
 
     private void Start() {
         StartGame();
     }
 
     void ResetMap() {
-        blockGrid.Reset();
+        BlockGrid.Instance.Reset();
+        playerBlockManager.Reset();
     }
 
     void StartGame() {
@@ -37,16 +41,13 @@ public class GameProgressManager : MonoBehaviour
     }
 
     private void Update() {
-        PlayerInput();
-        PlayerBlockSet();
+        PlayerAction();
         ObstacleBlockSet();
     }
 
-    void PlayerInput() {
-
-    }
-    void PlayerBlockSet() {
-
+    void PlayerAction() {
+        Vector2 inputDirection = playerInputManager.GetCurrentActionDataAsVector();
+        
     }
     void ObstacleBlockSet() {
 

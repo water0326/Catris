@@ -70,6 +70,7 @@ public class BlockGrid : MonoBehaviour
             Debug.LogWarning("the position of the block is not in range");
             return null;
         }
+        if(IsThereBlock(x, y)) return null;
 
         Block block = blockManager.GetBlock(blockName);
         block.pos = new Vector2(x, y);
@@ -103,7 +104,7 @@ public class BlockGrid : MonoBehaviour
             Debug.LogWarning("the position of the block is not in range");
             return false;
         }
-        if(!CanMoveTo(x, y)) return false;
+        if(IsThereBlock(x, y)) return false;
 
         blockGrid[(int)block.pos.x, (int)block.pos.y] = null;
         blockGrid[x, y] = block;
@@ -112,8 +113,8 @@ public class BlockGrid : MonoBehaviour
         
     }
 
-    bool CanMoveTo(int x, int y) {
-        return blockGrid[x, y] == null;
+    public bool IsThereBlock(int x, int y) {
+        return blockGrid[x, y] != null;
     }
     
     public void Reset() {
@@ -184,6 +185,10 @@ public class BlockGrid : MonoBehaviour
 
         return result;
 
+    }
+
+    public Vector2 GetMapSize() {
+        return new Vector2(_gridSetting.grid_cell_count_x, _gridSetting.grid_cell_count_y);
     }
 
     
