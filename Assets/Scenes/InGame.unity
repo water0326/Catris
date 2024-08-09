@@ -134,8 +134,9 @@ GameObject:
   - component: {fileID: 48672314}
   - component: {fileID: 48672316}
   - component: {fileID: 48672315}
+  - component: {fileID: 48672317}
   m_Layer: 5
-  m_Name: Game Screen
+  m_Name: Game Screen(Transparent)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -175,7 +176,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.14150941, g: 0.14150941, b: 0.14150941, a: 1}
+  m_Color: {r: 0.14150941, g: 0.14150941, b: 0.14150941, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -200,6 +201,27 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 48672313}
   m_CullTransparentMesh: 1
+--- !u!114 &48672317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 48672313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b02df3b7099ac4449b0ea5b0e05fd49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerBlockManager: {fileID: 497773088}
+  stackedPlayerBlockName: StackedCat
+  obstacleBlockName: Obstacle
+  obstacleHeadSprite: {fileID: -1158656096, guid: da12bb523a44bf344a66b95d24a4df21, type: 3}
+  obstacleTailSprite: {fileID: 437094790, guid: da12bb523a44bf344a66b95d24a4df21, type: 3}
+  obstacleBodySprite: {fileID: -859798204, guid: da12bb523a44bf344a66b95d24a4df21, type: 3}
+  obstacleAllInOneSprite: {fileID: -949710988, guid: da12bb523a44bf344a66b95d24a4df21, type: 3}
+  obstacleEmptySpaceRange: {x: 1, y: 2}
+  isGameOver: 0
 --- !u!1 &189311475
 GameObject:
   m_ObjectHideFlags: 0
@@ -212,6 +234,7 @@ GameObject:
   - component: {fileID: 189311478}
   - component: {fileID: 189311477}
   - component: {fileID: 189311476}
+  - component: {fileID: 189311480}
   m_Layer: 5
   m_Name: GameScreenBG Canvas
   m_TagString: Untagged
@@ -293,7 +316,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 399042386}
-  - {fileID: 1130433535}
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -302,6 +324,19 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &189311480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 189311475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 073ac110ce00a6545bd38db232d50fea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 3
 --- !u!1 &244629289
 GameObject:
   m_ObjectHideFlags: 0
@@ -366,6 +401,12 @@ MonoBehaviour:
   - name: BreakLine
     prefab: {fileID: 7859328385158409890, guid: 5a7d773669da25848b495a03b681d908, type: 3}
     init_pool_count: 10
+  - name: StackedCat
+    prefab: {fileID: 7859328385158409890, guid: 2e53962f6d0b39440838b7718e134b76, type: 3}
+    init_pool_count: 130
+  - name: Obstacle
+    prefab: {fileID: 7859328385158409890, guid: 4ffab0872eea70c41a865d8cdfb89b92, type: 3}
+    init_pool_count: 130
   poolsParent: {fileID: 1743727287}
 --- !u!1 &317988191
 GameObject:
@@ -728,6 +769,8 @@ MonoBehaviour:
   IsPlaying: 0
   playerInputManager: {fileID: 1540461584}
   playerBlockManager: {fileID: 497773088}
+  blockStackManager: {fileID: 48672317}
+  obstacleTime: 3
 --- !u!1 &859974700
 GameObject:
   m_ObjectHideFlags: 0
@@ -764,58 +807,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &1130433534
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1130433535}
-  - component: {fileID: 1130433536}
-  m_Layer: 5
-  m_Name: GameProgress Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1130433535
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1130433534}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 189311479}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1130433536
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1130433534}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c13fc189dc6da1a49a35062d2badb35a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  IsPlaying: 0
-  playerInputManager: {fileID: 1540461584}
-  playerBlockManager: {fileID: 0}
 --- !u!1 &1151839964
 GameObject:
   m_ObjectHideFlags: 0
@@ -1505,8 +1496,11 @@ MonoBehaviour:
     gridCenterPos: {x: 0.5, y: 0.5}
     grid_cell_count_x: 10
     grid_cell_count_y: 20
+    paddingRatio: 0.02
   activatedBlocksParent: {fileID: 859974701}
+  activatedBGBlocksParent: {fileID: 1808460165}
   screenCanvas: {fileID: 1199513208}
   chessBlockName: Chess
   breakLineBlockName: BreakLine
   playerBoardBlockName: PlayerBoard
+  gameScreenRectTransform: {fileID: 1555900868}

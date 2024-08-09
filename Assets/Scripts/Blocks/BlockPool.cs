@@ -21,7 +21,7 @@ public class BlockPool
         GameObject obj = GameObject.Instantiate(prefab);
         obj.SetActive(false);
         pool.Enqueue(obj);
-        obj.transform.parent = parent;
+        obj.transform.SetParent(parent);
         obj.GetComponent<Block>().blockName = name;
     }
 
@@ -44,7 +44,7 @@ public class BlockPool
     public bool ReturnObject(Block block) {
         if(block.blockName != name) return false;
         block.gameObject.SetActive(false);
-        block.transform.parent = parent;
+        block.transform.SetParent(parent);
         pool.Enqueue(block.gameObject);
         return true;
     }

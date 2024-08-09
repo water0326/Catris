@@ -6,10 +6,8 @@ using UnityEngine.UI;
 public class PlayerBlock {
     public PlayerBlock(Block block) {
         this.block = block;
-        block.SetDirection(new Vector2(1, 0), new Vector2(-1, 0));
     }
     public Block block;
-    public Vector2 direction;
 }
 
 public class PlayerBlockManager : MonoBehaviour
@@ -23,7 +21,7 @@ public class PlayerBlockManager : MonoBehaviour
     Vector2[] posList;
 
     [ReadOnly]
-    public static int PlayerZoneYSize = 3;
+    public static int PlayerZoneYSize = 4;
 
     PlayerBlock[] playerBlocks;
     PlayerBlock headBlock;
@@ -52,7 +50,23 @@ public class PlayerBlockManager : MonoBehaviour
         playerBlocks = new PlayerBlock[playerBlockLength];
         
         for(int i = 0 ; i < playerBlockLength ; i++) {
-            playerBlocks[i] = new PlayerBlock(BlockGrid.Instance.CreateBlock(playerBlockName, (int)mapSize.x / 2 - i, (int)mapSize.y - 1));
+            
+        }
+        ResetPosition();
+    }
+
+    public void ResetPosition() {
+
+        for(int i = 0 ; i < playerBlockLength ; i++) {
+            if(playerBlocks[i]!=null) {
+                BlockGrid.Instance.RemoveBlock(playerBlocks[i].block);
+            }
+        }
+
+        Vector2 mapSize = BlockGrid.Instance.GetMapSize();
+
+        for(int i = 0 ; i < playerBlockLength ; i++) {
+            playerBlocks[i] = new PlayerBlock(BlockGrid.Instance.CreateBlock(playerBlockName, (int)mapSize.x / 2 - i, (int)mapSize.y - 1, false));
             if(i==0) {
                 headBlock = playerBlocks[i];
                 headBlock.block.image.sprite = headSprite;
@@ -67,6 +81,11 @@ public class PlayerBlockManager : MonoBehaviour
             playerBlocks[i].block.SetDirection(new Vector2(-1, 0), new Vector2(1, 0));
             playerBlocks[i].block.state = BlockState.Straight;
         }
+        
+    }
+
+    public PlayerBlock[] GetPlayerBlockData() {
+        return playerBlocks;
     }
 
     public bool Move(int distanceX, int distanceY) {
@@ -74,17 +93,24 @@ public class PlayerBlockManager : MonoBehaviour
         int previousX = headBlock.block.x;
         int previousY = headBlock.block.y;
 
-        if(headBlock.block.x + distanceX == tailBlock.block.x && headBlock.block.y + distanceY == tailBlock.block.y) {
-            BlockGrid.Instance.ForceMoveBlock(headBlock.block, headBlock.block.x + distanceX, headBlock.block.y + distanceY);
+        int tempX = headBlock.block.x + distanceX;
+        int tempY = headBlock.block.y + distanceY;
+
+        if(IsInPlayerZone(tempX, tempY)) {
+            if(!BlockGrid.Instance.MoveBlock(headBlock.block, tempX, tempY)) {
+                if(tempX == tailBlock.block.x && tempY == tailBlock.block.y) {
+                    BlockGrid.Instance.ForceMoveBlock(headBlock.block, tempX, tempY);
+                    
+                }
+                else {
+                    return false;
+                }
+            }
         }
         else {
-            if(IsInPlayerZone(headBlock.block.x + distanceX, headBlock.block.y + distanceY) && BlockGrid.Instance.CanMove(headBlock.block.x + distanceX, headBlock.block.y + distanceY)) {
-                BlockGrid.Instance.MoveBlock(headBlock.block, headBlock.block.x + distanceX, headBlock.block.y + distanceY);
-            }
-            else {
-                return false;
-            }
+            return false;
         }
+
         Vector2 toDir = new Vector2(headBlock.block.x - previousX, headBlock.block.y - previousY);
         headBlock.block.SetDirection(-toDir, toDir);
         
@@ -124,6 +150,9 @@ public class PlayerBlockManager : MonoBehaviour
             
 
         }
+
+        BlockGrid.Instance.MoveBlock(headBlock.block, headBlock.block.x, headBlock.block.y);
+
         return true;
     }
 

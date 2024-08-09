@@ -32,7 +32,11 @@ public abstract class Block : MonoBehaviour
     [ReadOnly]
     public Image image;
 
-    Vector3 scale;
+    [SerializeField]
+    public bool isPlayerBlock = false;
+
+    [ReadOnly]
+    public Vector3 scale;
 
     static int GetVectorToDirection(int x, int y) {
         if(x == 1 && y == 0) {

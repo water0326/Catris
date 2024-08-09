@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 7859328385158409891}
   - component: {fileID: 7859328385158409902}
   - component: {fileID: 7859328385158409901}
-  - component: {fileID: -1545330408588576047}
+  - component: {fileID: -1271874515847166504}
   m_Layer: 5
-  m_Name: Cat
+  m_Name: Obstacle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -60,7 +60,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.8773585, g: 0.8773585, b: 0.8773585, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -77,7 +77,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &-1545330408588576047
+--- !u!114 &-1271874515847166504
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -86,7 +86,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7859328385158409890}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e87704822b792044b1d67b069e3abbd, type: 3}
+  m_Script: {fileID: 11500000, guid: eaf9ca6105e195345aa225f5f24c1bdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   canIgnore: 0
@@ -96,5 +96,5 @@ MonoBehaviour:
   blockName: 
   state: 0
   image: {fileID: 0}
-  isPlayerBlock: 1
+  isPlayerBlock: 0
   scale: {x: 0, y: 0, z: 0}

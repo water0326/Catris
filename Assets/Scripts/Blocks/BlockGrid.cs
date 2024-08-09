@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [System.Serializable]
@@ -20,6 +21,7 @@ public class GridSetting {
     public Vector2 blockSize {
         get { return new Vector2(gridSizeX / grid_cell_count_x, gridSizeY / grid_cell_count_y); }
     }
+    public float paddingRatio = 0.02f;
 }
 
 public class BlockGrid : MonoBehaviour
@@ -53,13 +55,15 @@ public class BlockGrid : MonoBehaviour
 
     [SerializeField]
     Transform activatedBlocksParent;
+    [SerializeField]
+    Transform activatedBGBlocksParent;
 
     [SerializeField]
     [ReadOnly]
     Block[,] blockGrid;
     [SerializeField]
     [ReadOnly]
-    string[,] defaultBlockName;
+    Block[,] backgroundBlockGrid;
 
     [SerializeField]
     Canvas screenCanvas;
@@ -71,12 +75,26 @@ public class BlockGrid : MonoBehaviour
     [SerializeField]
     string playerBoardBlockName = "PlayerBoard";
 
+    [SerializeField]
+    RectTransform gameScreenRectTransform;
+
     private void Awake() {
         _instance = this;
         setting = _gridSetting;
+        SetGameScreenSize();   
     }
 
-    public Block CreateBlock(string blockName, int x, int y) {
+    void SetGameScreenSize() {
+        int ySize = (int)Camera.main.ViewportToScreenPoint(new Vector2(0, _gridSetting.gridSizeY)).y;
+        int xSize = ySize / _gridSetting.grid_cell_count_y * _gridSetting.grid_cell_count_x;
+        int paddingValue = (int)(ySize * _gridSetting.paddingRatio);
+        xSize += paddingValue;
+        ySize += paddingValue;
+
+        gameScreenRectTransform.sizeDelta = new Vector2(xSize, ySize);
+    }
+
+    public Block CreateBlock(string blockName, int x, int y, bool isBG) {
 
         if(!IsPosInRange(x, y)) {
             Debug.LogWarning("the position of the block is not in range");
@@ -87,13 +105,16 @@ public class BlockGrid : MonoBehaviour
         Block block = blockManager.GetBlock(blockName);
         block.x = x;
         block.y = y;
-        block.transform.parent = activatedBlocksParent;
+        block.transform.SetParent(!isBG ? activatedBlocksParent : activatedBGBlocksParent);
 
-        ActivedBlockList.Add(block);
-        if(blockGrid[x, y]!=null) {
-            RemoveBlock(blockGrid[x, y]);
+        if(!isBG) {
+            ActivedBlockList.Add(block);
+            blockGrid[x, y] = block;
         }
-        blockGrid[x, y] = block;
+        else {
+            backgroundBlockGrid[x, y] = block;
+        }
+        
         block.Active();
 
         return block;
@@ -104,18 +125,11 @@ public class BlockGrid : MonoBehaviour
 
         if(!ActivedBlockList.Contains(block)) return false;
 
-        int x = block.x;
-        int y = block.y;
-        if(block.blockName != defaultBlockName[x,y]) {
-            blockGrid[block.x, block.y] = CreateBlock(defaultBlockName[x, y], x, y);
-        }
-
         block.Deactive();
 
+        blockGrid[block.x, block.y] = null;
         ActivedBlockList.Remove(block);
         blockManager.RemoveBlock(block);
-
-        
 
         return true;
 
@@ -127,9 +141,10 @@ public class BlockGrid : MonoBehaviour
             Debug.LogWarning("the position of the block is not in range");
             return false;
         }
-        if(!CanMove(x, y)) return false;
-
-        blockGrid[block.x, block.y] = CreateBlock(defaultBlockName[x, y], block.x, block.y);
+        if(!CanMove(x, y)) {
+            return false;
+        }
+        blockGrid[block.x, block.y] = null;
         blockGrid[x, y] = block;
         block.x = x;
         block.y = y;
@@ -138,21 +153,29 @@ public class BlockGrid : MonoBehaviour
         
     }
     public void ForceMoveBlock(Block block, int x, int y) {
+        
         if(!IsPosInRange(x, y)) {
             Debug.LogWarning("the position of the block is not in range");
         }
-
-        blockGrid[block.x, block.y] = CreateBlock(defaultBlockName[x, y], block.x, block.y);
+        
+        blockGrid[block.x, block.y] = null; 
         blockGrid[x, y] = block;
         block.x = x;
         block.y = y;
     }
 
     public bool CanMove(int x, int y) {
+        
         if(!IsPosInRange(x, y)) return false;
+
         return blockGrid[x, y] == null || blockGrid[x, y].canIgnore;
     }
     
+    public Block GetBlockInfo(int x, int y) {
+        if(!IsPosInRange(x, y)) return null;
+        return blockGrid[x, y];
+    }
+
     public void Reset() {
 
         for(int i = 0 ; i < ActivedBlockList.Count ; i++) {
@@ -161,7 +184,7 @@ public class BlockGrid : MonoBehaviour
 
         ActivedBlockList = new List<Block>();
         blockGrid = new Block[_gridSetting.grid_cell_count_x, _gridSetting.grid_cell_count_y];
-        defaultBlockName = new string[_gridSetting.grid_cell_count_x, _gridSetting.grid_cell_count_y];
+        backgroundBlockGrid = new Block[_gridSetting.grid_cell_count_x, _gridSetting.grid_cell_count_y];
 
         SetToEmptyBlock();
 
@@ -171,16 +194,13 @@ public class BlockGrid : MonoBehaviour
         for(int i = 0 ; i < _gridSetting.grid_cell_count_x ; i++) {
             for(int j = 0 ; j < _gridSetting.grid_cell_count_y; j++) {
                 if(j < _gridSetting.grid_cell_count_y - PlayerBlockManager.PlayerZoneYSize) {       // Chess
-                    blockGrid[i, j] = CreateBlock(chessBlockName, i, j);
-                    defaultBlockName[i, j] = chessBlockName;
+                    backgroundBlockGrid[i, j] = CreateBlock(chessBlockName, i, j, true);
                 }
                 else if(j == _gridSetting.grid_cell_count_y - PlayerBlockManager.PlayerZoneYSize) { // BreakLine
-                    blockGrid[i, j] = CreateBlock(breakLineBlockName, i, j);
-                    defaultBlockName[i, j] = breakLineBlockName;
+                    backgroundBlockGrid[i, j] = CreateBlock(breakLineBlockName, i, j, true);
                 }
                 else {                                                                              // PlayerBoard
-                    blockGrid[i, j] = CreateBlock(playerBoardBlockName, i, j);
-                    defaultBlockName[i, j] = playerBoardBlockName;
+                    backgroundBlockGrid[i, j] = CreateBlock(playerBoardBlockName, i, j, true);
                 }
             }
         }
@@ -248,7 +268,5 @@ public class BlockGrid : MonoBehaviour
     public Vector2 GetMapSize() {
         return new Vector2(_gridSetting.grid_cell_count_x, _gridSetting.grid_cell_count_y);
     }
-
-    
 
 }

@@ -8,12 +8,13 @@ public enum ActionName {
     Up,
     Down,
     Left,
-    Right
+    Right,
+    Drop
 }
 
-class KeyData {
+class BlockMoveKeyData {
 
-    public KeyData(KeyCode key, Vector2 direction, int priority) {
+    public BlockMoveKeyData(KeyCode key, Vector2 direction, int priority) {
         this.key = key;
         this.direction = direction;
         this.priority = priority;
@@ -23,37 +24,50 @@ class KeyData {
     public int priority;
 }
 
+class BlockSpecialKeyData {
+    public BlockSpecialKeyData(KeyCode key) {
+        this.key = key;
+        isPressed = false;   
+    }
+    public KeyCode key;
+    public bool isPressed;
+}
+
 public class PlayerInputManager : MonoBehaviour
 {
-    Dictionary<ActionName, KeyData> actions = new Dictionary<ActionName, KeyData>();
-    
+    Dictionary<ActionName, BlockMoveKeyData> blockMoveActions = new Dictionary<ActionName, BlockMoveKeyData>();
+    Dictionary<ActionName, BlockSpecialKeyData> blockSpecialActions = new Dictionary<ActionName, BlockSpecialKeyData>();
+
     [SerializeField]
     [ReadOnly]
-    KeyData currentKeyData;
+    BlockMoveKeyData currentKeyData;
 
-    KeyData noneKeyData = new KeyData(KeyCode.None, Vector2.zero, 0);
+    BlockMoveKeyData noneKeyData = new BlockMoveKeyData(KeyCode.None, Vector2.zero, 0);
 
     private void Awake() {
         currentKeyData = noneKeyData;
-        actions.Add(ActionName.Down, new KeyData(KeyCode.S, new Vector2(0,-1),0));
-        actions.Add(ActionName.Up, new KeyData(KeyCode.W, new Vector2(0,1),0));
-        actions.Add(ActionName.Left, new KeyData(KeyCode.A, new Vector2(-1,0),0));
-        actions.Add(ActionName.Right,new KeyData(KeyCode.D, new Vector2(1,0),0));
+        blockMoveActions.Add(ActionName.Down, new BlockMoveKeyData(KeyCode.S, new Vector2(0,-1),0));
+        blockMoveActions.Add(ActionName.Up, new BlockMoveKeyData(KeyCode.W, new Vector2(0,1),0));
+        blockMoveActions.Add(ActionName.Left, new BlockMoveKeyData(KeyCode.A, new Vector2(-1,0),0));
+        blockMoveActions.Add(ActionName.Right,new BlockMoveKeyData(KeyCode.D, new Vector2(1,0),0));
+
+        blockSpecialActions.Add(ActionName.Drop, new BlockSpecialKeyData(KeyCode.Space));
     }
-    
-    private void Update() {
+
+    public Vector2 GetCurrentActionDataAsVector() {
         bool isPressed = false;
-        foreach(ActionName action in actions.Keys) {
-            if(Input.GetKeyDown(actions[action].key)) {
-                currentKeyData = actions[action];
+        foreach(ActionName action in blockMoveActions.Keys) {
+            if(Input.GetKeyDown(blockMoveActions[action].key)) {
+                currentKeyData = blockMoveActions[action];
                 isPressed = true;
             }
         }
         if(!isPressed) currentKeyData = noneKeyData;
+        return currentKeyData.direction;
     }
 
-    public Vector2 GetCurrentActionDataAsVector() {
-        return currentKeyData.direction;
+    public bool IsSpeicalKeyPressed(ActionName action) {
+        return Input.GetKeyDown(blockSpecialActions[action].key);
     }
     
 

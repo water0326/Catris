@@ -12,6 +12,12 @@ public class GameProgressManager : MonoBehaviour
     PlayerInputManager playerInputManager;
     [SerializeField]
     PlayerBlockManager playerBlockManager;
+    [SerializeField]
+    BlockStackManager blockStackManager;
+
+    float time;
+    [SerializeField]
+    float obstacleTime;
 
     private void Start() {
         StartGame();
@@ -41,20 +47,35 @@ public class GameProgressManager : MonoBehaviour
     }
 
     private void Update() {
-        PlayerAction();
-        ObstacleBlockSet();
+        if(IsPlaying) {
+            PlayerAction();
+            ObstacleBlockSet();
+            if(blockStackManager.isGameOver) {
+                GameEnd();
+            }
+        }
     }
 
     void PlayerAction() {
         Vector2 inputDirection = playerInputManager.GetCurrentActionDataAsVector();
         int x = (int)inputDirection.x;
         int y = (int)inputDirection.y;
+        
         if(x != 0 || y != 0) {
+            
             playerBlockManager.Move((int)inputDirection.x, (int)inputDirection.y);
+        }
+        if(playerInputManager.IsSpeicalKeyPressed(ActionName.Drop)) {
+            blockStackManager.DropBlock();
+            playerBlockManager.ResetPosition();
         }
     }
     void ObstacleBlockSet() {
-
+        time += Time.deltaTime;
+        if(time >= obstacleTime) {
+            blockStackManager.CreateObstacle();
+            time = 0f;
+        }
     }
 
 }

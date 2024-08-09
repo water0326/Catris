@@ -23,7 +23,7 @@ public class BlockManager : MonoBehaviour
         for(int i = 0 ; i < blockInfoData.Length ; i++) {
             BlockInfo currentBlockInfo = blockInfoData[i];
             GameObject parentObject = new GameObject(currentBlockInfo.name + " (Pool)");
-            parentObject.transform.parent = poolsParent;
+            parentObject.transform.SetParent(poolsParent);
             pools.Add(currentBlockInfo.name, new BlockPool(currentBlockInfo.name, currentBlockInfo.prefab, parentObject.GetComponent<Transform>(), currentBlockInfo.init_pool_count));
             pools[currentBlockInfo.name].Reset();
             print(currentBlockInfo.name + " pool was loaded.");
