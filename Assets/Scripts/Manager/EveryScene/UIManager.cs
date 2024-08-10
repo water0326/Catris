@@ -10,7 +10,7 @@ public class UIManager : Singleton<UIManager>
 
     [ReadOnly]
     [SerializeField]
-    List<BaseUI> UIList = new List<BaseUI>();
+    List<BaseUI> UIList;
     Stack<BaseUI> switchableUIStack = new Stack<BaseUI>();
 
     const int FIXED_UI_OREDER_IN_LAYER = 10;
@@ -33,6 +33,7 @@ public class UIManager : Singleton<UIManager>
     }
 
     void GetAllUIInScene() {
+        print("Fetching UIs");
         UIList = new List<BaseUI>(GameObject.FindObjectsOfType<BaseUI>());
         for(int i = 0 ; i < UIList.Count ; i++) {
             for(int j = i+1 ; j < UIList.Count ; j++) {
@@ -54,6 +55,9 @@ public class UIManager : Singleton<UIManager>
         }
     }
     public BaseUI GetUIById(int id) {
+        if(UIList == null || UIList.Count == 0) {
+            GetAllUIInScene();
+        }
         for(int i = 0 ; i < UIList.Count ; i++) {
             if(UIList[i].ID == id) {
                 return UIList[i];

@@ -100,6 +100,7 @@ public abstract class Block : MonoBehaviour
     }
 
     private void OnEnable() {
+        SetPos();
         rectTransform.sizeDelta = Camera.main.ViewportToScreenPoint(BlockGrid.gridSetting.blockSize);
     }
 

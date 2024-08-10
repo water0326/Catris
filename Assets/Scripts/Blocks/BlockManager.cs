@@ -30,12 +30,15 @@ public class BlockManager : MonoBehaviour
         }
     }
 
-    public Block GetBlock(string blockName) {
+    public Block GetBlock(string blockName, int x, int y) {
         if(!pools.ContainsKey(blockName)) {
             Debug.LogError("There isn't any block pool which name is " + blockName + ".");
             return null;
         }
         Block block = pools[blockName].GetObject().GetComponent<Block>();
+        block.x = x;
+        block.y = y;
+        block.gameObject.SetActive(true);
         return block;
     }
 

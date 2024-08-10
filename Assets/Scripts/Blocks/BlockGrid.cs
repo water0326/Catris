@@ -76,6 +76,21 @@ public class BlockGrid : MonoBehaviour
     string playerBoardBlockName = "PlayerBoard";
 
     [SerializeField]
+    int[,] catFaceGrid = new int[10,20] {
+        { 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 2, 1, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 1, 2, 1, 2, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 1, 2, 1, 2, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0, 2, 1, 2, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+    };
+
+
+    [SerializeField]
     RectTransform gameScreenRectTransform;
 
     private void Awake() {
@@ -102,9 +117,31 @@ public class BlockGrid : MonoBehaviour
         }
         if(!CanMove(x, y)) return null;
 
-        Block block = blockManager.GetBlock(blockName);
-        block.x = x;
-        block.y = y;
+        Block block = blockManager.GetBlock(blockName, x, y);
+        block.transform.SetParent(!isBG ? activatedBlocksParent : activatedBGBlocksParent);
+
+        if(!isBG) {
+            ActivedBlockList.Add(block);
+            blockGrid[x, y] = block;
+        }
+        else {
+            backgroundBlockGrid[x, y] = block;
+        }
+        
+        block.Active();
+
+        return block;
+
+    }
+
+    public Block ForceCreateBlock(string blockName, int x, int y, bool isBG) {
+
+        if(!IsPosInRange(x, y)) {
+            Debug.LogWarning("the position of the block is not in range");
+            return null;
+        }
+
+        Block block = blockManager.GetBlock(blockName, x, y);
         block.transform.SetParent(!isBG ? activatedBlocksParent : activatedBGBlocksParent);
 
         if(!isBG) {
@@ -195,6 +232,7 @@ public class BlockGrid : MonoBehaviour
             for(int j = 0 ; j < _gridSetting.grid_cell_count_y; j++) {
                 if(j < _gridSetting.grid_cell_count_y - PlayerBlockManager.PlayerZoneYSize) {       // Chess
                     backgroundBlockGrid[i, j] = CreateBlock(chessBlockName, i, j, true);
+                    backgroundBlockGrid[i, j].gameObject.GetComponent<Chess>().SetColor(catFaceGrid[i,j]);
                 }
                 else if(j == _gridSetting.grid_cell_count_y - PlayerBlockManager.PlayerZoneYSize) { // BreakLine
                     backgroundBlockGrid[i, j] = CreateBlock(breakLineBlockName, i, j, true);

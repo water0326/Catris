@@ -24,6 +24,9 @@ public class BlockStackManager : MonoBehaviour
     string obstacleBlockName = "Obstacle";
 
     [SerializeField]
+    string guideBlockName = "Guide";
+
+    [SerializeField]
     Sprite obstacleHeadSprite;
     [SerializeField]
     Sprite obstacleTailSprite;
@@ -36,6 +39,10 @@ public class BlockStackManager : MonoBehaviour
     Vector2 obstacleEmptySpaceRange;
 
     [ReadOnly]
+    public Block[] guideBlocks;
+    
+
+    [ReadOnly]
     public bool isGameOver;
 
     public void DropBlock() {
@@ -44,17 +51,46 @@ public class BlockStackManager : MonoBehaviour
         if(playerBlockData == null) return;
 
         Pos[] resultPlayerBlockPos = GetDeepestPlayerPos(playerBlockData);
+        
+        for(int i = 0 ; i < guideBlocks.Length ; i++) {
+            BlockGrid.Instance.RemoveBlock(guideBlocks[i]);
+        }
 
         for(int i = 0 ; i < playerBlockData.Length ; i++) {
             CreateStackedCatBlock(playerBlockData[i].block, resultPlayerBlockPos[i].x, resultPlayerBlockPos[i].y);
         }
 
         CheckCanClearLine();
+
+        SetGuideBlock();
         
+    }
+
+    public void SetGuideBlock() {
+
+        PlayerBlock[] blocks = playerBlockManager.GetPlayerBlockData();
+        if(guideBlocks != null) {
+            for(int i = 0 ; i < guideBlocks.Length ; i++) {
+                BlockGrid.Instance.RemoveBlock(guideBlocks[i]);
+            }
+        }
+        guideBlocks = new Block[blocks.Length];
+        Pos[] pos = GetDeepestPlayerPos(blocks);
+
+        for(int i = 0 ; i < pos.Length ; i++) {
+            guideBlocks[i] = BlockGrid.Instance.CreateBlock(guideBlockName, pos[i].x, pos[i].y, false);
+        }
     }
 
     void CheckCanClearLine() {
         int[] canClearLineList = GetCanClearLine();
+        if(canClearLineList.Length != 0) {
+            ScoreManager.instance.ComboUp();
+            ScoreManager.instance.ChangeScore(canClearLineList.Length);
+        }
+        else {
+            ScoreManager.instance.ResetCombo();
+        }
         if(canClearLineList != null) {
             for(int i = 0 ; i < canClearLineList.Length ; i++) {
                 ClearLine(canClearLineList[i]);
@@ -100,7 +136,7 @@ public class BlockStackManager : MonoBehaviour
         for(int i = (int)mapSize.y - PlayerBlockManager.PlayerZoneYSize ; i < mapSize.y ; i++) {
             for(int j = 0 ; j < mapSize.x ; j++) {
                 Block block = BlockGrid.Instance.GetBlockInfo(j,i);
-                if(block != null && !block.isPlayerBlock) {
+                if(block != null && !block.isPlayerBlock && !block.canIgnore) {
                     return true;
                 }
             }
@@ -146,7 +182,7 @@ public class BlockStackManager : MonoBehaviour
 
     Block CreateStackedCatBlock(Block playerBlock, int x, int y) {
 
-        Block block = BlockGrid.Instance.CreateBlock(stackedPlayerBlockName, x, y, false); 
+        Block block = BlockGrid.Instance.ForceCreateBlock(stackedPlayerBlockName, x, y, false); 
         block.state = playerBlock.state;
         block.image.sprite = playerBlock.image.sprite;
         block.GetComponent<RectTransform>().rotation = playerBlock.GetComponent<RectTransform>().rotation;

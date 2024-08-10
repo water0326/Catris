@@ -37,7 +37,6 @@ public class BlockPool
             CreateNewObject();
         }
         GameObject obj = pool.Dequeue();
-        obj.SetActive(true);
         return obj;
     }
 

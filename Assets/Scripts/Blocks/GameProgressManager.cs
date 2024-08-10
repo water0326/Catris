@@ -14,12 +14,15 @@ public class GameProgressManager : MonoBehaviour
     PlayerBlockManager playerBlockManager;
     [SerializeField]
     BlockStackManager blockStackManager;
+    [SerializeField]
+    DataUI dataUI;
 
     float time;
     [SerializeField]
     float obstacleTime;
 
     private void Start() {
+        dataUI = UIManager.Instance.GetUIById(4).GetComponent<DataUI>();
         StartGame();
     }
 
@@ -31,7 +34,16 @@ public class GameProgressManager : MonoBehaviour
     void StartGame() {
         PauseGame();
         ResetMap();
+        DataSet();
+        dataUI.DataSet();
+        blockStackManager.SetGuideBlock();
         ResumeGame();
+        
+    }
+
+    void DataSet() {
+        ScoreManager.instance.ResetScore();
+        LevelManager.instance.ResetLevel();
     }
 
     void PauseGame() {
@@ -53,6 +65,7 @@ public class GameProgressManager : MonoBehaviour
             if(blockStackManager.isGameOver) {
                 GameEnd();
             }
+            dataUI.DataSet();
         }
     }
 
@@ -64,6 +77,7 @@ public class GameProgressManager : MonoBehaviour
         if(x != 0 || y != 0) {
             
             playerBlockManager.Move((int)inputDirection.x, (int)inputDirection.y);
+            blockStackManager.SetGuideBlock();
         }
         if(playerInputManager.IsSpeicalKeyPressed(ActionName.Drop)) {
             blockStackManager.DropBlock();
@@ -71,6 +85,7 @@ public class GameProgressManager : MonoBehaviour
         }
     }
     void ObstacleBlockSet() {
+        obstacleTime = LevelManager.instance.GetObstacleCoolDown();
         time += Time.deltaTime;
         if(time >= obstacleTime) {
             blockStackManager.CreateObstacle();

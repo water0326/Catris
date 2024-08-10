@@ -15,6 +15,12 @@ public class PlayerBlockManager : MonoBehaviour
     [SerializeField]
     int playerBlockLength;
     [SerializeField]
+    [ReadOnly]
+    int currentBlockIdx = -1;
+    [SerializeField]
+    [ReadOnly]
+    int nextBlockIdx = -1;
+    [SerializeField]
     string playerBlockName;
     [SerializeField]
     [ReadOnly]
@@ -28,13 +34,18 @@ public class PlayerBlockManager : MonoBehaviour
     PlayerBlock tailBlock;
 
     [SerializeField]
-    Sprite straightSprite;
+    Sprite[] straightSprite;
     [SerializeField]
-    Sprite curveSprite;
+    Sprite[] curveSprite;
     [SerializeField]
-    Sprite headSprite;
+    Sprite[] headSprite;
     [SerializeField]
-    Sprite tailSprite;
+    Sprite[] tailSprite;
+    [SerializeField]
+    int[] blockCounts;
+
+    [SerializeField]
+    BlockStackManager blockStackManager;
 
     public void Reset() {
 
@@ -47,21 +58,27 @@ public class PlayerBlockManager : MonoBehaviour
         Vector2 mapSize = BlockGrid.Instance.GetMapSize();
         playerBlockLength = Mathf.Min(playerBlockLength, (int)mapSize.x / 2 + 1);
 
-        playerBlocks = new PlayerBlock[playerBlockLength];
-        
-        for(int i = 0 ; i < playerBlockLength ; i++) {
-            
-        }
         ResetPosition();
     }
 
     public void ResetPosition() {
 
-        for(int i = 0 ; i < playerBlockLength ; i++) {
-            if(playerBlocks[i]!=null) {
-                BlockGrid.Instance.RemoveBlock(playerBlocks[i].block);
+        if(nextBlockIdx == -1) {
+            nextBlockIdx = Random.Range(0, blockCounts.Length);
+        }
+        currentBlockIdx = nextBlockIdx;
+        playerBlockLength = blockCounts[currentBlockIdx];
+        nextBlockIdx = Random.Range(0, blockCounts.Length);
+
+        if(playerBlocks != null) {
+            for(int i = 0 ; i < playerBlocks.Length ; i++) {
+                if(playerBlocks[i]!=null) {
+                    BlockGrid.Instance.RemoveBlock(playerBlocks[i].block);
+                }
             }
         }
+
+        playerBlocks = new PlayerBlock[playerBlockLength];
 
         Vector2 mapSize = BlockGrid.Instance.GetMapSize();
 
@@ -69,18 +86,20 @@ public class PlayerBlockManager : MonoBehaviour
             playerBlocks[i] = new PlayerBlock(BlockGrid.Instance.CreateBlock(playerBlockName, (int)mapSize.x / 2 - i, (int)mapSize.y - 1, false));
             if(i==0) {
                 headBlock = playerBlocks[i];
-                headBlock.block.image.sprite = headSprite;
+                headBlock.block.image.sprite = headSprite[currentBlockIdx];
             }
             else if(i==playerBlockLength - 1) {
                 tailBlock = playerBlocks[i];
-                tailBlock.block.image.sprite = tailSprite;
+                tailBlock.block.image.sprite = tailSprite[currentBlockIdx];
             }
             else {
-                playerBlocks[i].block.image.sprite = straightSprite;
+                playerBlocks[i].block.image.sprite = straightSprite[currentBlockIdx];
             }
             playerBlocks[i].block.SetDirection(new Vector2(-1, 0), new Vector2(1, 0));
             playerBlocks[i].block.state = BlockState.Straight;
         }
+
+        blockStackManager.SetGuideBlock();
         
     }
 
@@ -139,16 +158,17 @@ public class PlayerBlockManager : MonoBehaviour
             BlockGrid.Instance.MoveBlock(playerBlocks[i].block, toPosX, toPosY);
             if(playerBlocks[i]!=tailBlock) {
                 if(playerBlocks[i].block.state == BlockState.Straight) {
-                    playerBlocks[i].block.image.sprite = straightSprite;
+                    playerBlocks[i].block.image.sprite = straightSprite[currentBlockIdx];
                 }
                 else if(playerBlocks[i].block.state == BlockState.Curve) {
-                    playerBlocks[i].block.image.sprite = curveSprite;
+                    playerBlocks[i].block.image.sprite = curveSprite[currentBlockIdx];
                 }
             }
-            
-            
-            
-
+            else {
+                int toX = playerBlocks[i-1].block.x;
+                int toY = playerBlocks[i-1].block.x;
+                playerBlocks[i].block.SetDirection(new Vector2(-toX, -toY), new Vector2(toX, toY));
+            }
         }
 
         BlockGrid.Instance.MoveBlock(headBlock.block, headBlock.block.x, headBlock.block.y);
@@ -174,5 +194,12 @@ public class PlayerBlockManager : MonoBehaviour
         else {
             return "Down";
         }
+    }
+
+    public int GetNextBlockLength() {
+        return blockCounts[nextBlockIdx];
+    }
+    public Sprite GetNextBlockHeadSprite() {
+        return headSprite[nextBlockIdx];
     }
 }
