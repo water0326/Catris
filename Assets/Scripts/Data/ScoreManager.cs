@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ScoreManager : MonoBehaviour
 {
+    [SerializeField]
     DataUI dataUI;
     
     public static ScoreManager instance;
@@ -23,7 +24,6 @@ public class ScoreManager : MonoBehaviour
     int scorePerLine = 1000;
 
     private void Awake() {
-        dataUI = UIManager.Instance.GetUIById(4).GetComponent<DataUI>();
         instance = this;
     }
 

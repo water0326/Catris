@@ -58,7 +58,7 @@ public abstract class Block : MonoBehaviour
 
     abstract public void Deactive();
 
-    void SetPos() {
+    public void SetPos() {
         rectTransform.anchoredPosition = BlockGrid.Instance.GridPosToScreenPos(x, y);
         rectTransform.localScale = scale;
     }
@@ -99,14 +99,18 @@ public abstract class Block : MonoBehaviour
         scale = new Vector3(1,1,1);
     }
 
-    private void OnEnable() {
-        SetPos();
+    public void SetSize() {
         rectTransform.sizeDelta = Camera.main.ViewportToScreenPoint(BlockGrid.gridSetting.blockSize);
     }
-
+    private void Update() {
+        SetPos();
+        
+        SetSize();
+        OnUpdate();
+    }
+    public virtual void OnUpdate() {}
     private void FixedUpdate() {
         OnFixedUpdate();
-        SetPos();
     }
     protected abstract void OnFixedUpdate();
 

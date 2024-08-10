@@ -38,6 +38,7 @@ public class BlockManager : MonoBehaviour
         Block block = pools[blockName].GetObject().GetComponent<Block>();
         block.x = x;
         block.y = y;
+        
         block.gameObject.SetActive(true);
         return block;
     }

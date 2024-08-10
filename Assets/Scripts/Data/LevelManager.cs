@@ -6,6 +6,7 @@ public class LevelManager : MonoBehaviour
 {
     public static LevelManager instance;
 
+    [SerializeField]
     DataUI dataUI;
 
     public Dictionary<int, int> scoreToLevel = new Dictionary<int, int>() {
@@ -39,12 +40,11 @@ public class LevelManager : MonoBehaviour
     private int _level;
 
     private void Awake() {
-        dataUI = UIManager.Instance.GetUIById(4).GetComponent<DataUI>();
         instance = this;
     }
 
     public void ResetLevel() {
-        _level = 0;
+        _level = 1;
         dataUI.DataSet();
     }
 

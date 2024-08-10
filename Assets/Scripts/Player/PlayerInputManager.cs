@@ -9,7 +9,8 @@ public enum ActionName {
     Down,
     Left,
     Right,
-    Drop
+    Drop,
+    Reset
 }
 
 class BlockMoveKeyData {
@@ -38,36 +39,39 @@ public class PlayerInputManager : MonoBehaviour
     Dictionary<ActionName, BlockMoveKeyData> blockMoveActions = new Dictionary<ActionName, BlockMoveKeyData>();
     Dictionary<ActionName, BlockSpecialKeyData> blockSpecialActions = new Dictionary<ActionName, BlockSpecialKeyData>();
 
-    [SerializeField]
-    [ReadOnly]
-    BlockMoveKeyData currentKeyData;
+    List<BlockMoveKeyData> keyList;
 
     BlockMoveKeyData noneKeyData = new BlockMoveKeyData(KeyCode.None, Vector2.zero, 0);
 
     private void Awake() {
-        currentKeyData = noneKeyData;
+        keyList = new List<BlockMoveKeyData>();
         blockMoveActions.Add(ActionName.Down, new BlockMoveKeyData(KeyCode.S, new Vector2(0,-1),0));
         blockMoveActions.Add(ActionName.Up, new BlockMoveKeyData(KeyCode.W, new Vector2(0,1),0));
         blockMoveActions.Add(ActionName.Left, new BlockMoveKeyData(KeyCode.A, new Vector2(-1,0),0));
         blockMoveActions.Add(ActionName.Right,new BlockMoveKeyData(KeyCode.D, new Vector2(1,0),0));
 
         blockSpecialActions.Add(ActionName.Drop, new BlockSpecialKeyData(KeyCode.Space));
+        blockSpecialActions.Add(ActionName.Reset, new BlockSpecialKeyData(KeyCode.R));
     }
 
     public Vector2 GetCurrentActionDataAsVector() {
-        bool isPressed = false;
-        foreach(ActionName action in blockMoveActions.Keys) {
-            if(Input.GetKeyDown(blockMoveActions[action].key)) {
-                currentKeyData = blockMoveActions[action];
-                isPressed = true;
-            }
-        }
-        if(!isPressed) currentKeyData = noneKeyData;
-        return currentKeyData.direction;
+        if(keyList.Count == 0) return noneKeyData.direction;
+        return keyList[keyList.Count - 1].direction;
     }
 
     public bool IsSpeicalKeyPressed(ActionName action) {
         return Input.GetKeyDown(blockSpecialActions[action].key);
+    }
+
+    private void Update() {
+        foreach(ActionName action in blockMoveActions.Keys) {
+            if(Input.GetKeyDown(blockMoveActions[action].key)) {
+                keyList.Add(blockMoveActions[action]);
+            }
+            if(Input.GetKeyUp(blockMoveActions[action].key)) {
+                keyList.Remove(blockMoveActions[action]);
+            }
+        }
     }
     
 

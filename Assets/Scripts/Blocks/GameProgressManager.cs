@@ -5,6 +5,8 @@ using UnityEngine;
 public class GameProgressManager : MonoBehaviour
 {
 
+    public static GameProgressManager instance;
+
     [ReadOnly]
     public bool IsPlaying;
 
@@ -21,8 +23,17 @@ public class GameProgressManager : MonoBehaviour
     [SerializeField]
     float obstacleTime;
 
+    [SerializeField]
+    float playerMoveInputInterval;
+    float playerMoveInputIntervalCurrent;
+
+    private void Awake() {
+        instance = this;
+    }
+
     private void Start() {
         dataUI = UIManager.Instance.GetUIById(4).GetComponent<DataUI>();
+        playerMoveInputIntervalCurrent = 0;
         StartGame();
     }
 
@@ -56,6 +67,7 @@ public class GameProgressManager : MonoBehaviour
 
     void GameEnd() {
         PauseGame();
+        UIManager.Instance.EnableUI(6);
     }
 
     private void Update() {
@@ -73,15 +85,20 @@ public class GameProgressManager : MonoBehaviour
         Vector2 inputDirection = playerInputManager.GetCurrentActionDataAsVector();
         int x = (int)inputDirection.x;
         int y = (int)inputDirection.y;
-        
+        playerMoveInputIntervalCurrent += Time.deltaTime;
         if(x != 0 || y != 0) {
-            
-            playerBlockManager.Move((int)inputDirection.x, (int)inputDirection.y);
-            blockStackManager.SetGuideBlock();
+            if(playerMoveInputIntervalCurrent >= playerMoveInputInterval) {
+                playerMoveInputIntervalCurrent = 0;
+                playerBlockManager.Move((int)inputDirection.x, (int)inputDirection.y);
+                blockStackManager.SetGuideBlock();
+            }
         }
         if(playerInputManager.IsSpeicalKeyPressed(ActionName.Drop)) {
             blockStackManager.DropBlock();
-            playerBlockManager.ResetPosition();
+            playerBlockManager.ResetPosition(true);
+        }
+        if(playerInputManager.IsSpeicalKeyPressed(ActionName.Reset)) {
+            playerBlockManager.ResetPosition(false);
         }
     }
     void ObstacleBlockSet() {
@@ -91,6 +108,10 @@ public class GameProgressManager : MonoBehaviour
             blockStackManager.CreateObstacle();
             time = 0f;
         }
+    }
+
+    public float GetObstacleBarPercentage() {
+        return time / obstacleTime;
     }
 
 }

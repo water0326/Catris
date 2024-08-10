@@ -13,8 +13,8 @@ public class UIManager : Singleton<UIManager>
     List<BaseUI> UIList;
     Stack<BaseUI> switchableUIStack = new Stack<BaseUI>();
 
-    const int FIXED_UI_OREDER_IN_LAYER = 10;
-    const int SWITCHABLE_UI_OREDER_IN_LAYER = 50;
+    const int FIXED_UI_ORDER_IN_LAYER = 10;
+    const int SWITCHABLE_UI_ORDER_IN_LAYER = 50;
 
     const string DEFAULT_LAYER_NAME = "UI";
 
@@ -36,9 +36,10 @@ public class UIManager : Singleton<UIManager>
         print("Fetching UIs");
         UIList = new List<BaseUI>(GameObject.FindObjectsOfType<BaseUI>());
         for(int i = 0 ; i < UIList.Count ; i++) {
+            if(i == 0) continue; // Singleton UI
             for(int j = i+1 ; j < UIList.Count ; j++) {
                 if(UIList[i].ID == UIList[j].ID) {
-                    Debug.LogError("There are UI has same ids");
+                    Debug.LogError("There are UI has same ids{" + UIList[i].ID + "}");
                     return;
                 }
             }
@@ -50,7 +51,8 @@ public class UIManager : Singleton<UIManager>
 
         for(int i = 0; i < UIList.Count ; i++) {
             if(UIList[i].gameObject.GetComponent<FixedUI>() != null) {
-                UIList[i].gameObject.GetComponent<Canvas>().sortingOrder = FIXED_UI_OREDER_IN_LAYER;
+                UIList[i].gameObject.GetComponent<Canvas>().sortingLayerName = DEFAULT_LAYER_NAME;
+                UIList[i].gameObject.GetComponent<Canvas>().sortingOrder = FIXED_UI_ORDER_IN_LAYER;
             }
         }
     }
@@ -88,7 +90,7 @@ public class UIManager : Singleton<UIManager>
 
         Canvas component = baseui.gameObject.GetComponent<Canvas>();
         component.sortingLayerName = DEFAULT_LAYER_NAME;
-        component.sortingOrder = SWITCHABLE_UI_OREDER_IN_LAYER + switchableUIStack.Count;
+        component.sortingOrder = SWITCHABLE_UI_ORDER_IN_LAYER + switchableUIStack.Count;
         switchableUIStack.Push(baseui);
         s_ui.ToggleActive(true);
 

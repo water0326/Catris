@@ -119,6 +119,7 @@ public class BlockGrid : MonoBehaviour
 
         Block block = blockManager.GetBlock(blockName, x, y);
         block.transform.SetParent(!isBG ? activatedBlocksParent : activatedBGBlocksParent);
+        block.SetPos();
 
         if(!isBG) {
             ActivedBlockList.Add(block);
@@ -295,9 +296,10 @@ public class BlockGrid : MonoBehaviour
 
         Vector2 screenPos = new Vector2(startPos.x + blockSizeX * (x+0.5f), startPos.y + blockSizeY * (y+0.5f));
 
+
         Vector2 result;
 
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(screenCanvas.GetComponent<RectTransform>(), Camera.main.ViewportToScreenPoint(screenPos), Camera.main, out  result);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(screenCanvas.GetComponent<RectTransform>(), Camera.main.ViewportToScreenPoint(screenPos), Camera.main, out result);
 
         return result;
 
@@ -305,6 +307,17 @@ public class BlockGrid : MonoBehaviour
 
     public Vector2 GetMapSize() {
         return new Vector2(_gridSetting.grid_cell_count_x, _gridSetting.grid_cell_count_y);
+    }
+
+    public Vector2 GetParticlePos(float x, float y) {
+        Vector2 startPos = new Vector2((1 - gridSetting.gridSizeX) * 0.5f, (1 - gridSetting.gridSizeY) * 0.5f);
+
+        float blockSizeX = gridSetting.gridSizeX / gridSetting.grid_cell_count_x;
+        float blockSizeY = gridSetting.gridSizeY / gridSetting.grid_cell_count_y;
+
+        Vector2 screenPos = new Vector2(startPos.x + blockSizeX * (x+0.5f), startPos.y + blockSizeY * (y+0.5f));
+        return Camera.main.ViewportToScreenPoint(screenPos);
+
     }
 
 }

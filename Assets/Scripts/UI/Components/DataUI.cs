@@ -21,11 +21,27 @@ public class DataUI : FixedUI
     [SerializeField]
     PlayerBlockManager playerBlockManager;
 
+    [SerializeField]
+    RectTransform obstacleBar;
+    
+    float maxSize;
+
+    private void Awake() {
+        maxSize = obstacleBar.sizeDelta.x;
+    }
+
     public void DataSet() {
         nextBlock.sprite = playerBlockManager.GetNextBlockHeadSprite();
         nextBlockLength.text = playerBlockManager.GetNextBlockLength().ToString();
         score.text = "Score : " + ScoreManager.instance.Score.ToString();
         level.text = "Level : " + LevelManager.instance.Level.ToString();
         combo.text = "Combo : " + ScoreManager.instance.Combo.ToString();
+    }
+
+    private void Update() {
+        float percent = GameProgressManager.instance.GetObstacleBarPercentage();
+        Vector2 size = obstacleBar.sizeDelta;
+        size.x = maxSize * (1 -percent);
+        obstacleBar.sizeDelta = size;
     }
 }

@@ -6,10 +6,14 @@ using UnityEngine.UI;
 public class SceneFadeUI : SwitchableUI
 {
 
+    const int SCREEN_FADE_UI_ORDER_IN_LAYER = 100;
+
     [SerializeField]
     GameObject parentObject;
     [SerializeField]
     Image backgroundImage;
+
+    Canvas canvas;
 
     public override void UIOn()
     {
@@ -23,5 +27,16 @@ public class SceneFadeUI : SwitchableUI
         Color tempColor = backgroundImage.color;
         tempColor.a = value;
         backgroundImage.color = tempColor;
+    }
+    private void Update() {
+        if(canvas.worldCamera == null) {
+            GetComponent<Canvas>().worldCamera = Camera.main;
+        }
+    }
+
+    private void Awake() {
+        canvas = GetComponent<Canvas>();
+        canvas.sortingLayerName = "UI";
+        canvas.sortingOrder = SCREEN_FADE_UI_ORDER_IN_LAYER;
     }
 }

@@ -10,7 +10,7 @@ public class Maker : BaseScene
     }
     public override void OnStart()
     {
-        StartCoroutine(Test());
+        
     }
     public override void OnUpdate()
     {
@@ -19,10 +19,5 @@ public class Maker : BaseScene
     public override void OnSceneEnded()
     {
         
-    }
-
-    IEnumerator Test() {
-        yield return new WaitForSeconds(3f);
-        GameSceneManager.Instance.ChangeScene(Scenes.Lobby);
     }
 }

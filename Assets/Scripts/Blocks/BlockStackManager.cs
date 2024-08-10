@@ -27,6 +27,9 @@ public class BlockStackManager : MonoBehaviour
     string guideBlockName = "Guide";
 
     [SerializeField]
+    string dropParticleName = "Drop";
+
+    [SerializeField]
     Sprite obstacleHeadSprite;
     [SerializeField]
     Sprite obstacleTailSprite;
@@ -40,6 +43,11 @@ public class BlockStackManager : MonoBehaviour
 
     [ReadOnly]
     public Block[] guideBlocks;
+
+    [SerializeField]
+    int warningY = 12;
+
+    ColorSheetUI colorSheetUI;
     
 
     [ReadOnly]
@@ -119,7 +127,9 @@ public class BlockStackManager : MonoBehaviour
     void ClearLine(int idx) {
         Vector2 mapSize = BlockGrid.Instance.GetMapSize();
         for(int i = 0 ; i < mapSize.x ; i++) {
-            BlockGrid.Instance.RemoveBlock(BlockGrid.Instance.GetBlockInfo(i, idx));
+            Block block = BlockGrid.Instance.GetBlockInfo(i, idx);
+            ParticlePool.instance.SetParticle(dropParticleName, block.x, block.y);
+            BlockGrid.Instance.RemoveBlock(block);
         }
         for(int i = idx+1 ; i < mapSize.y-PlayerBlockManager.PlayerZoneYSize ; i++) {
             for(int j = 0 ; j < mapSize.x ; j++) {
@@ -194,6 +204,19 @@ public class BlockStackManager : MonoBehaviour
         if(CheckGameEnd()) {
             isGameOver = true;
         }
+        colorSheetUI.SetWarning(GetHighestBlock() >= warningY);
+    }
+
+    int GetHighestBlock() {
+        Vector2 mapSize = BlockGrid.Instance.GetMapSize();
+        for(int i = (int)mapSize.y - PlayerBlockManager.PlayerZoneYSize - 1 ; i >= 0 ; i--) {
+            for(int j = 0 ; j < mapSize.x ; j++) {
+                if(BlockGrid.Instance.GetBlockInfo(j, i) != null && !BlockGrid.Instance.GetBlockInfo(j, i).canIgnore) {
+                    return i;
+                }
+            }
+        }
+        return -1;
     }
 
     public void CreateObstacle() {
@@ -256,5 +279,8 @@ public class BlockStackManager : MonoBehaviour
 
     private void Awake() {
         isGameOver = false;
+    }
+    private void Start() {
+        colorSheetUI = UIManager.Instance.GetUIById(8).GetComponent<ColorSheetUI>();
     }
 }

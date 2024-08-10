@@ -27,7 +27,7 @@ public class PlayerBlockManager : MonoBehaviour
     Vector2[] posList;
 
     [ReadOnly]
-    public static int PlayerZoneYSize = 4;
+    public static int PlayerZoneYSize = 5;
 
     PlayerBlock[] playerBlocks;
     PlayerBlock headBlock;
@@ -58,17 +58,19 @@ public class PlayerBlockManager : MonoBehaviour
         Vector2 mapSize = BlockGrid.Instance.GetMapSize();
         playerBlockLength = Mathf.Min(playerBlockLength, (int)mapSize.x / 2 + 1);
 
-        ResetPosition();
+        ResetPosition(true);
     }
 
-    public void ResetPosition() {
-
-        if(nextBlockIdx == -1) {
+    public void ResetPosition(bool changePattern) {
+        if(changePattern) {
+            if(nextBlockIdx == -1) {
+                nextBlockIdx = Random.Range(0, blockCounts.Length);
+            }
+            currentBlockIdx = nextBlockIdx;
+            playerBlockLength = blockCounts[currentBlockIdx];
             nextBlockIdx = Random.Range(0, blockCounts.Length);
         }
-        currentBlockIdx = nextBlockIdx;
-        playerBlockLength = blockCounts[currentBlockIdx];
-        nextBlockIdx = Random.Range(0, blockCounts.Length);
+        
 
         if(playerBlocks != null) {
             for(int i = 0 ; i < playerBlocks.Length ; i++) {
@@ -142,18 +144,21 @@ public class PlayerBlockManager : MonoBehaviour
             int toPosX = previousX;
             int toPosY = previousY;
 
-            // Get Direction Part
-            // toPos : current
-            // playerBlocks[i].block : previous
-            // playerBlocks[i-1].block : next
+            if(playerBlocks[i] != tailBlock) {
+                // Get Direction Part
+                // toPos : current
+                // playerBlocks[i].block : previous
+                // playerBlocks[i-1].block : next
 
-            // get : previous - current & to - current
-            Vector2 from = new Vector2(playerBlocks[i].block.x - toPosX, playerBlocks[i].block.y - toPosY);
-            Vector2 to = new Vector2(playerBlocks[i-1].block.x - toPosX, playerBlocks[i-1].block.y - toPosY);
-            playerBlocks[i].block.SetDirection(from, to);
+                // get : previous - current & to - current
+                Vector2 from = new Vector2(playerBlocks[i].block.x - toPosX, playerBlocks[i].block.y - toPosY);
+                Vector2 to = new Vector2(playerBlocks[i-1].block.x - toPosX, playerBlocks[i-1].block.y - toPosY);
+                playerBlocks[i].block.SetDirection(from, to);
+                
+                previousX = playerBlocks[i].block.x;
+                previousY = playerBlocks[i].block.y;
+            }
             
-            previousX = playerBlocks[i].block.x;
-            previousY = playerBlocks[i].block.y;
 
             BlockGrid.Instance.MoveBlock(playerBlocks[i].block, toPosX, toPosY);
             if(playerBlocks[i]!=tailBlock) {
@@ -165,8 +170,8 @@ public class PlayerBlockManager : MonoBehaviour
                 }
             }
             else {
-                int toX = playerBlocks[i-1].block.x;
-                int toY = playerBlocks[i-1].block.x;
+                int toX = playerBlocks[i-1].block.x - playerBlocks[i].block.x;
+                int toY = playerBlocks[i-1].block.y - playerBlocks[i].block.y;
                 playerBlocks[i].block.SetDirection(new Vector2(-toX, -toY), new Vector2(toX, toY));
             }
         }
