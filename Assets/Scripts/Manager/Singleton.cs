@@ -24,5 +24,8 @@ public abstract class Singleton<T> : MonoBehaviour where T : class
         else {
             Destroy(gameObject);
         }
+        OnAwake();
     }
+
+    protected virtual void OnAwake() {}
 }

@@ -11,7 +11,7 @@ public class Lobby : BaseScene
     }
     public override void OnStart()
     {
-        
+        SoundManager.Instance.Play("BGM");
     }
     public override void OnUpdate()
     {

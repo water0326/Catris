@@ -65,6 +65,15 @@ public class GameSceneManager : Singleton<GameSceneManager>
         GameManager.Instance.Resume();
 
         _currentScene.OnSceneStarted();
+        
+        if(_currentSceneType != Scenes.Loading) {
+            StartCoroutine(WaitOnStart());
+        }
+        
+    }
+
+    IEnumerator WaitOnStart() {
+        yield return new WaitUntil(() => !IsFading);
         _currentScene.OnStart();
     }
 

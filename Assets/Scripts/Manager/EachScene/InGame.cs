@@ -10,7 +10,7 @@ public class InGame : BaseScene
     }
     public override void OnStart()
     {
-        
+        SoundManager.Instance.Play("BGM2");
     }
     public override void OnUpdate()
     {

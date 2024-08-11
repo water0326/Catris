@@ -50,6 +50,7 @@ public class LobbySectionUI : FixedUI
     public void ChangeBGMVolume(int value) {
         StaticDataManager.Instance.data.BGMVolume = Mathf.Clamp(StaticDataManager.Instance.data.BGMVolume + value, 0, 100);
         BGMText.text = StaticDataManager.Instance.data.BGMVolume.ToString() + "%";
+        SoundManager.Instance.ChangeBGMVolume();
     }
 
     public void ChangeEffectVolume(int value) {

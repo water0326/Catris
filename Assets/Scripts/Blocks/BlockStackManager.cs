@@ -64,6 +64,8 @@ public class BlockStackManager : MonoBehaviour
             BlockGrid.Instance.RemoveBlock(guideBlocks[i]);
         }
 
+        SoundManager.Instance.Play("Drop");
+
         for(int i = 0 ; i < playerBlockData.Length ; i++) {
             CreateStackedCatBlock(playerBlockData[i].block, resultPlayerBlockPos[i].x, resultPlayerBlockPos[i].y);
         }
@@ -93,6 +95,7 @@ public class BlockStackManager : MonoBehaviour
     void CheckCanClearLine() {
         int[] canClearLineList = GetCanClearLine();
         if(canClearLineList.Length != 0) {
+            SoundManager.Instance.Play("LineClear");
             ScoreManager.instance.ComboUp();
             ScoreManager.instance.ChangeScore(canClearLineList.Length);
         }

@@ -26,6 +26,7 @@ public class ColorSheetUI : FixedUI
         isWarning = onoff;
         if(isWarning) {
             time = 0;
+            SoundManager.Instance.Play("Warning");
         }
         else {
             image.color = new Color(0, 0, 0, 0);
