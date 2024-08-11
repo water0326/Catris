@@ -1,6 +1,6 @@
 # 🐱⬜ Catris
 
-## Project Info
+## Project Information
 
 ![image](https://github.com/user-attachments/assets/558fe5e2-846a-4071-9f1f-bd22a32df1d2)
 
@@ -27,9 +27,15 @@ You can make blocks by using control your cats which length are various.
 
 ### Kinds of Cats
 
+![RedCat](https://github.com/user-attachments/assets/45bb34d6-bd6c-4e12-938a-c474c858c34d)<br/>
+![OrangeCat](https://github.com/user-attachments/assets/6c593cf2-3a4a-471d-99f8-657f380cbf12)<br/>
+![GreenCat](https://github.com/user-attachments/assets/404edff8-8a33-42cb-92a6-77fdaa3200e5)<br/>
+![BlueCat](https://github.com/user-attachments/assets/9b863a4f-b51a-4bf6-8608-6d454833a938)
+
+
 <br />
 
-## Game Scene Info
+## Game Scene Information
 ### Intro
 <img src="https://github.com/user-attachments/assets/c5308931-27fb-44f5-aa47-a1e61bff6d7d"  width="600"/>
 
