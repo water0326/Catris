@@ -14,7 +14,7 @@
 
 ## Download Link
 
-[Google Drive](https://drive.google.com/file/d/1MIJ9-SWW2mO4-2fJ0VR3O4GM6xFiHWRx/view?usp=drive_link)
+[Google Drive](https://drive.google.com/file/d/1MIJ9-SWW2mO4-2fJ0VR3O4GM6xFiHWRx/view?usp=sharing)
 
 <br/>
 
