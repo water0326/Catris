@@ -48,3 +48,21 @@ You can make blocks by using control your cats which length are various.
 ### In-Game
 <img src="https://github.com/user-attachments/assets/888febe8-c334-495c-920a-2dfc239229a7"  width="600"/>
 <img src="https://github.com/user-attachments/assets/8ba54623-8220-4e1b-a64a-ecca20773a00"  width="600"/>
+
+<br/>
+
+## Logic
+
+### Scene Logic
+![image](https://github.com/user-attachments/assets/53a8028c-f01e-403f-8483-6040ad4a2fb5)
+
+### UI Logic
+![image](https://github.com/user-attachments/assets/7c660b21-a47f-4092-97f7-3d14265487fd)
+
+### Block Grid Logic
+![image](https://github.com/user-attachments/assets/5859eeb7-26f9-4736-8d2e-aabf47fae9ab)
+
+
+
+
+
