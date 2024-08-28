@@ -7,7 +7,7 @@
 ![AppIcon](https://github.com/user-attachments/assets/6bfe554a-808d-4bc8-a006-ae922eef66cf)
 ### Project Name : Catris
 ### Genre : Puzzle
-### Platform : PC
+### Platform : PC(Windows)
  
  
 <br/>
@@ -28,8 +28,8 @@ Reset Block : R<br/>
 
 ### Description
 
-It seems we are playing common Tetris game, but it might be different!<br/>
-You can make blocks by using control your cats which length are various.
+It seems like we are playing common Tetris game, but it might be different!<br/>
+You can create blocks by controlling your cats which come in various lengths.
 
 ### Kinds of Cats
 
