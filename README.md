@@ -28,7 +28,7 @@ Reset Block : R<br/>
 
 ### Description
 
-It seems like we are playing common Tetris game, but it might be different!<br/>
+It seems like we are playing acommon Tetris game, but it might be different!<br/>
 You can create blocks by controlling your cats which come in various lengths.
 
 ### Kinds of Cats
