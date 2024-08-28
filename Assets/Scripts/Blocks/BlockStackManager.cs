@@ -67,13 +67,18 @@ public class BlockStackManager : MonoBehaviour
         SoundManager.Instance.Play("Drop");
 
         for(int i = 0 ; i < playerBlockData.Length ; i++) {
+            
             CreateStackedCatBlock(playerBlockData[i].block, resultPlayerBlockPos[i].x, resultPlayerBlockPos[i].y);
         }
 
         CheckCanClearLine();
 
         SetGuideBlock();
-        
+
+        if(CheckGameEnd()) {
+            isGameOver = true;
+        }
+
     }
 
     public void SetGuideBlock() {
@@ -200,6 +205,8 @@ public class BlockStackManager : MonoBehaviour
         block.image.sprite = playerBlock.image.sprite;
         block.GetComponent<RectTransform>().rotation = playerBlock.GetComponent<RectTransform>().rotation;
         block.scale = playerBlock.scale;
+        //block.isPlayerBlock = false;
+        //block.canIgnore = false;
         return block;
     }
 
